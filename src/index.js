@@ -1,17 +1,24 @@
 const express = require('express');
 const path = require('path');
-const { logger, logEvents } = require('./middleware/logger')
-const errorHandler = require('./middleware/errorHandler')
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
-const corsOptions = require('./config/corsOptions')
-const connectDB = require('./config/dbConn')
 const mongoose = require('mongoose')
 
 
+const corsOptions = require('./config/corsOptions')
+const connectDB = require('./config/dbConn')
+const errorHandler = require('./middleware/errorHandler')
+const { logger, logEvents } = require('./middleware/logger')
+
+
+
 require('dotenv').config()
+require('express-async-errors')
 const app = express();
 const PORT = process.env.PORT || 3500;
+
+
+
 connectDB()
 app.use(logger)
 
@@ -46,6 +53,8 @@ app.all('*', (req, res) => {
 // tao token
 //require('crypto')randomBytes(60).toString('hex')
 app.use(errorHandler)
+
+
 mongoose.connection.once('open', () => {
     console.log('Connected to MongoDB')
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
